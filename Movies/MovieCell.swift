@@ -7,28 +7,48 @@
 //
 
 import SwiftUI
+import Combine
 
 struct MovieCell : View {
     // MARK: - Properties
     let movie: Movie
+    @State var posterImage =  UIImage()
     
     // MARK: - UI
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "photo")
-                .imageScale(.large)
-            
-            VStack(alignment: .leading) {
-                Text(movie.title)
-                    .font(.headline)
+        Group {
+            HStack(spacing: 12) {
+                Image(uiImage: posterImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
                 
-                Text(movie.overview)
-                    .font(.subheadline)
-                    .lineLimit(4)
-                    .foregroundColor(.secondary)
+                VStack(alignment: .leading) {
+                    Text(movie.title)
+                        .font(.headline)
+                    
+                    Text(movie.overview)
+                        .font(.subheadline)
+                        .lineLimit(4)
+                        .foregroundColor(.secondary)
+                }
+            }
+        }.onAppear {
+            self.loadImage(path: self.movie.posterPath)
+        }
+    }
+    
+    private func loadImage(path: String) {
+        //APIManager().loadImage(path: path)
+        APIManager().getImage(path: path) { (result) in
+            switch result {
+            case .success(let image):
+                self.posterImage = image
+            case .failure(_):
+                break
             }
         }
     }
+
 }
 
 #if DEBUG

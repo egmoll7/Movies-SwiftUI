@@ -9,14 +9,22 @@
 import SwiftUI
 import Combine
 
-class NowShowingViewModel {
-    var movieList: MovieList = MovieList(movies: [])
+class NowShowingViewModel: BindableObject {
+    
+    let didChange = PassthroughSubject<Void, Never>()
+    var movieList: MovieList = MovieList(movies: []) {
+        didSet {
+            self.didChange.send(())
+        }
+    }
     
     init() {
         APIManager().getNowShowing { (result) in
             switch result {
             case .success(let movies):
-                self.movieList = movies
+                DispatchQueue.main.async {
+                    self.movieList = movies
+                }
             default:
                 return
             }

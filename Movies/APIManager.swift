@@ -7,9 +7,13 @@
 //
 
 import Foundation
+import SwiftUI
+import Combine
 import NetworkService
 
-struct APIManager {
+class APIManager: BindableObject {
+
+    let didChange = PassthroughSubject<Data, Never>()
     
     private enum APIConstants {
         static let apiKey = "53ac772a5ea4e7e6b5089a8b1935c3eb"
@@ -47,6 +51,19 @@ struct APIManager {
                 completion(.success(image))
             case .failure(let error):
                 completion(.failure(error))
+            }
+        }
+    }
+    
+    func loadImage(path: String) {
+        guard let url = URL(string: "\(APIConstants.baseThumbanilURL)\(path)") else { return }
+        
+        NetworkService.shared.get(url: url) { result in
+            switch result {
+            case .success(let data):
+                self.didChange.send(data)
+            case .failure(let error):
+                break
             }
         }
     }

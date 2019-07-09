@@ -7,8 +7,11 @@
 //
 
 import SwiftUI
+import Combine
 
-struct Movie: Identifiable, Decodable {
+class Movie: NSObject, Identifiable, Decodable, BindableObject {
+    
+    let didChange = PassthroughSubject<Void, Never>()
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -23,6 +26,30 @@ struct Movie: Identifiable, Decodable {
     let title: String
     let posterPath: String
     let overview: String
+    var image: UIImage = UIImage()
+    
+    init(id: Int, rating: Float, title: String, posterPath: String, overview: String) {
+        self.id = id
+        self.rating = rating
+        self.title = title
+        self.posterPath = posterPath
+        self.overview = overview
+        
+    }
+    
+    private func loadImage(imagePath: String) {
+        APIManager().getImage(path: imagePath) { result in
+            switch result {
+            case .success(let image):
+                self.image = image
+            default:
+                return
+            }
+            DispatchQueue.main.async {
+                self.didChange.send(())
+            }
+        }
+    }
 }
 
 struct MovieList: Decodable {

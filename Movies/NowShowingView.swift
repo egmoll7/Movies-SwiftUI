@@ -7,25 +7,22 @@
 //
 
 import SwiftUI
+import Combine
 
 struct NowShowingView : View {
     // MARK: - Properties
-    var viewModel = NowShowingViewModel()
+    @ObjectBinding var viewModel = NowShowingViewModel()
     
     // MARK: - UI
     var body: some View {
         NavigationView {
             List(viewModel.movieList.movies) { movie in
-                NavigationButton(destination: MovieDetails(movie: movie)) {
+                NavigationLink(destination: MovieDetails(movie: movie)) {
                     MovieCell(movie: movie)
                 }
-            }
-            .navigationBarTitle(Text("Now Showing"))
+            }.navigationBarTitle(Text("Now Showing"))
         }
     }
-    
-    // MARK: - Private Methods
-    
 }
 
 #if DEBUG
