@@ -11,31 +11,31 @@ import SwiftUI
 import Combine
 import NetworkService
 
-class APIManager: BindableObject {
-
-    let didChange = PassthroughSubject<Data, Never>()
+class APIManager {
     
     private enum APIConstants {
         static let apiKey = "53ac772a5ea4e7e6b5089a8b1935c3eb"
         static let baseThumbanilURL = "https://image.tmdb.org/t/p/w500"
     }
     
-    func getNowShowing(_ completion: @escaping (Result<MovieList, Error>) -> Void) {
-        guard let url = URL(string: "https://api.themoviedb.org/3/movie/now_playing") else { return }
-        let paramaters = ["api_key": APIConstants.apiKey]
-        
-        NetworkService.shared.get(url: url, parameters: paramaters) { result in
-            switch result {
-            case .success(let data):
-                do {
-                    let movies = try JSONDecoder().decode(MovieList.self, from: data)
-                    completion(.success(movies))
-                } catch {
+    func nowShowing() -> Future<MovieList, Error> {
+        return Future { completion in
+            guard let url = URL(string: "https://api.themoviedb.org/3/movie/now_playing") else { return }
+            let paramaters = ["api_key": APIConstants.apiKey]
+            
+            NetworkService.shared.get(url: url, parameters: paramaters) { result in
+                switch result {
+                case .success(let data):
+                    do {
+                        let movies = try JSONDecoder().decode(MovieList.self, from: data)
+                        completion(.success(movies))
+                    } catch {
+                        completion(.failure(error))
+                        return
+                    }
+                case .failure(let error):
                     completion(.failure(error))
-                    return
                 }
-            case .failure(let error):
-                completion(.failure(error))
             }
         }
     }
@@ -61,7 +61,7 @@ class APIManager: BindableObject {
         NetworkService.shared.get(url: url) { result in
             switch result {
             case .success(let data):
-                self.didChange.send(data)
+                print(data)
             case .failure(let error):
                 break
             }

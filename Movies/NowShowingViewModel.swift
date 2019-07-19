@@ -9,26 +9,22 @@
 import SwiftUI
 import Combine
 
-class NowShowingViewModel: BindableObject {
+class NowShowingViewModel {
     
-    let didChange = PassthroughSubject<Void, Never>()
-    var movieList: MovieList = MovieList(movies: []) {
-        didSet {
-            self.didChange.send(())
-        }
-    }
+    @Published var movieList = MovieList(movies: [])
     
     init() {
-        APIManager().getNowShowing { (result) in
-            switch result {
-            case .success(let movies):
-                DispatchQueue.main.async {
-                    self.movieList = movies
-                }
-            default:
-                return
-            }
-        }
+        loadData()
     }
+    
+    func loadData() {
+        let subcriber = Subscribers.Sink<MovieList, Error> {
+            self.movieList = $0
+        }
+        
+        APIManager().nowShowing().subscribe(subcriber)
+    }
+    
+    
 }
 

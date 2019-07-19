@@ -9,9 +9,7 @@
 import SwiftUI
 import Combine
 
-class Movie: NSObject, Identifiable, Decodable, BindableObject {
-    
-    let didChange = PassthroughSubject<Void, Never>()
+class Movie: NSObject, Identifiable, Decodable {
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -44,9 +42,6 @@ class Movie: NSObject, Identifiable, Decodable, BindableObject {
                 self.image = image
             default:
                 return
-            }
-            DispatchQueue.main.async {
-                self.didChange.send(())
             }
         }
     }

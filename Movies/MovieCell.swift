@@ -20,8 +20,8 @@ struct MovieCell : View {
             HStack(spacing: 12) {
                 Image(uiImage: posterImage)
                     .resizable()
+                    .frame(width: 45, height: 60)
                     .aspectRatio(contentMode: .fill)
-                
                 VStack(alignment: .leading) {
                     Text(movie.title)
                         .font(.headline)
@@ -38,7 +38,6 @@ struct MovieCell : View {
     }
     
     private func loadImage(path: String) {
-        //APIManager().loadImage(path: path)
         APIManager().getImage(path: path) { (result) in
             switch result {
             case .success(let image):
@@ -48,7 +47,6 @@ struct MovieCell : View {
             }
         }
     }
-
 }
 
 #if DEBUG

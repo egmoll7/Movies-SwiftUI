@@ -11,7 +11,7 @@ import Combine
 
 struct NowShowingView : View {
     // MARK: - Properties
-    @ObjectBinding var viewModel = NowShowingViewModel()
+    let viewModel = NowShowingViewModel()
     
     // MARK: - UI
     var body: some View {
